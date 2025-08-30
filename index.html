@@ -19,6 +19,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
         .container {
@@ -29,12 +30,14 @@
             text-align: center;
             max-width: 600px;
             width: 100%;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
         h1 {
             color: #333;
             margin-bottom: 30px;
             font-size: 2.5em;
+            transition: color 0.3s ease;
         }
         
         .food-emoji {
@@ -50,13 +53,46 @@
             font-size: 1.2em;
             border-radius: 50px;
             cursor: pointer;
-            margin: 20px 0;
+            margin: 10px 0;
             transition: all 0.3s ease;
         }
         
         .choose-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .dark-mode-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-btn:hover {
+            background: #111;
         }
         
         .result {
@@ -71,6 +107,13 @@
             color: #ff6b6b;
             font-size: 2em;
             margin-bottom: 10px;
+        }
+
+        .love-text {
+            font-size: 1.2em;
+            color: #764ba2;
+            opacity: 0;
+            transform: translateY(10px);
         }
         
         .add-food {
@@ -105,8 +148,10 @@
         }
         
         .food-list {
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: left;
+            display: none; /* 默认隐藏 */
+            transition: all 0.3s ease;
         }
         
         .food-list h3 {
@@ -165,17 +210,43 @@
         .clear-btn:hover {
             background: #ff3742;
         }
+
+        /* 🌙 暗黑模式样式 */
+        body.dark {
+            background: linear-gradient(135deg, #1e1e2f 0%, #121212 100%);
+            color: #eee;
+        }
+        .container.dark {
+            background: #2c2c3e;
+            color: #eee;
+        }
+        h1.dark {
+            color: #fff;
+        }
+        .result.dark {
+            background: #3a3a4a;
+        }
+        .food-item.dark {
+            background: #444;
+            color: #ddd;
+        }
+        .add-food.dark {
+            background: #333;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="appContainer">
+        <button class="dark-mode-btn" onclick="toggleDarkMode()">🌙 切换暗黑模式</button>
         <div class="food-emoji">🍔🍕🍣🍜</div>
-        <h1>姐姐今天吃什么？</h1>
+        <h1 id="mainTitle">姐姐今天吃什么？</h1>
         
         <button class="choose-btn" onclick="chooseFood()">🎲 公主请选择</button>
+        <button class="menu-btn" onclick="toggleMenu()">📋 查看菜单</button>
         
         <div class="result" id="result">
             <h2 id="chosenFood"></h2>
+            <p class="love-text" id="loveText">今天也很喜欢泥！💖</p>
             <p>点击按钮可以重新选择</p>
         </div>
         
@@ -185,11 +256,9 @@
             <button onclick="addFood()">添加</button>
         </div>
         
-        <div class="food-list">
+        <div class="food-list" id="foodListContainer">
             <h3>当前食物列表</h3>
-            <div class="food-items" id="foodList">
-                <!-- 食物列表会在这里显示 -->
-            </div>
+            <div class="food-items" id="foodList"></div>
             <div style="text-align: center;">
                 <button class="clear-btn" onclick="clearAllFoods()">清空列表</button>
             </div>
@@ -197,7 +266,7 @@
     </div>
 
     <script>
-        // 初始化食物列表（从本地存储获取或使用默认值）
+        // 初始化食物列表
         let foods = JSON.parse(localStorage.getItem('foods')) || [
             "麦当劳", "肯德基", "披萨", "寿司", "拉面", 
             "火锅", "烧烤", "炒饭", "汉堡", "炸鸡"
@@ -225,13 +294,24 @@
             
             foods.forEach((food, index) => {
                 const foodItem = document.createElement('span');
-                foodItem.className = 'food-item';
+                foodItem.className = 'food-item' + (document.body.classList.contains('dark') ? ' dark' : '');
                 foodItem.innerHTML = `
                     ${food}
                     <button class="delete-btn" onclick="deleteFood(${index})">×</button>
                 `;
                 foodListElement.appendChild(foodItem);
             });
+        }
+        
+        // 切换菜单显示/隐藏
+        function toggleMenu() {
+            const menuContainer = document.getElementById('foodListContainer');
+            if (menuContainer.style.display === 'block') {
+                menuContainer.style.display = 'none';
+            } else {
+                menuContainer.style.display = 'block';
+                displayFoods();
+            }
         }
         
         // 随机选择食物
@@ -247,15 +327,10 @@
             document.getElementById('chosenFood').textContent = `🎉 今天吃：${chosenFood}！`;
             document.getElementById('result').style.display = 'block';
             
-            const resultElement = document.getElementById('result');
-            resultElement.style.opacity = '0';
-            resultElement.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                resultElement.style.transition = 'all 0.5s ease';
-                resultElement.style.opacity = '1';
-                resultElement.style.transform = 'translateY(0)';
-            }, 100);
+            const loveText = document.getElementById('loveText');
+            loveText.style.transition = 'all 0.8s ease';
+            loveText.style.opacity = '1';
+            loveText.style.transform = 'translateY(0)';
         }
         
         // 添加新食物
@@ -307,6 +382,7 @@
                 saveFoods();
                 displayFoods();
                 document.getElementById('result').style.display = 'none';
+                document.getElementById('foodListContainer').style.display = 'none';
             }
         }
         
@@ -315,6 +391,24 @@
             localStorage.setItem('foods', JSON.stringify(foods));
         }
         
+        // 🌙 切换暗黑模式
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            document.getElementById('appContainer').classList.toggle('dark');
+            document.getElementById('result').classList.toggle('dark');
+            document.getElementById('mainTitle').classList.toggle('dark');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+            displayFoods();
+        }
+
+        // 页面加载时恢复暗黑模式状态
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.getElementById('appContainer').classList.add('dark');
+            document.getElementById('result').classList.add('dark');
+            document.getElementById('mainTitle').classList.add('dark');
+        }
+
         // 按回车键添加食物
         document.getElementById('newFood').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
