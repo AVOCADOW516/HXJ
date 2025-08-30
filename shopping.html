@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>买买买买</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 500;
+        }
+        
+        .piggy-bank {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .total-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .total-money {
+            font-size: 1.4em;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        
+        .total-amount {
+            font-size: 1.8em;
+            color: #2d3748;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .add-item-form {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            color: #2d3748;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .items-container {
+            margin-top: 25px;
+        }
+        
+        .item-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 12px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .item-card:hover {
+            border-color: #cbd5e0;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .item-name {
+            font-size: 1.1em;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        
+        .item-price {
+            font-size: 1em;
+            color: #718096;
+        }
+        
+        .progress-container {
+            background: #edf2f7;
+            border-radius: 8px;
+            height: 16px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            min-width: 20px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .item-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .detail-form {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            width: auto;
+            flex: 1;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        
+        .status-achieved {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-saving {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            padding: 40px 0;
+        }
+        
+        .empty-state .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="piggy-bank">💰</div>
+        <h1>COME WITH ME</h1>
+        
+        <div class="total-section">
+            <div class="total-money">当前总金额</div>
+            <div class="total-amount" id="currentMoney">0.00 元</div>
+        </div>
+        
+        <div class="add-item-form">
+            <div class="form-group">
+                <label for="itemName">商品名称</label>
+                <input type="text" id="itemName" placeholder="输入商品名称">
+            </div>
+            <div class="form-group">
+                <label for="itemPrice">目标金额 (元)</label>
+                <input type="number" id="itemPrice" placeholder="输入目标金额" min="0" step="0.01">
+            </div>
+            <button class="btn btn-primary" onclick="addItem()">添加商品</button>
+        </div>
+        
+        <div class="items-container" id="itemsContainer">
+            <div class="empty-state">
+                <div class="icon">🛒</div>
+                <p>还没有添加商品</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMoney = parseFloat(localStorage.getItem('currentMoney')) || 0;
+        let items = JSON.parse(localStorage.getItem('items')) || [];
+        
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            updateTotalMoney();
+            displayItems();
+        });
+        
+        // 更新总金额显示
+        function updateTotalMoney() {
+            const element = document.getElementById('currentMoney');
+            if (element) {
+                element.textContent = currentMoney.toFixed(2) + ' 元';
+                localStorage.setItem('currentMoney', currentMoney);
+            }
+        }
+        
+        // 添加商品
+        function addItem() {
+            const nameInput = document.getElementById('itemName');
+            const priceInput = document.getElementById('itemPrice');
+            
+            if (!nameInput || !priceInput) {
+                alert('页面加载异常，请刷新重试');
+                return;
+            }
+            
+            const name = nameInput.value.trim();
+            const price = parseFloat(priceInput.value);
+
+            if (!name) {
+                alert('请输入商品名称');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                alert('请输入有效的价格');
+                return;
+            }
+            
+            const newItem = {
+                id: Date.now(),
+                name: name,
+                price: price,
+                savedAmount: 0,
+                achieved: false
+            };
+            
+            items.push(newItem);
+            saveItems();
+            displayItems();
+            
+            // 清空输入框
+            nameInput.value = '';
+            priceInput.value = '';
+            nameInput.focus();
+        }
+        
+        // 显示所有商品
+        function displayItems() {
+            const container = document.getElementById('itemsContainer');
+            
+            if (!container) {
+                return;
+            }
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🛒</div>
+                        <p>还没有添加商品</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const progress = item.price > 0 ? Math.min((item.savedAmount / item.price) * 100, 100) : 0;
+                const canBuy = item.savedAmount >= item.price;
+                const needed = Math.max(0, item.price - item.savedAmount);
+                
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.innerHTML = `
+                    <div class="item-header" onclick="toggleItemDetails(${index})">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">¥${item.price.toFixed(2)}</div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${progress}%"></div>
+                    </div>
+                    
+                    <div class="progress-info">
+                        <span>已攒: ¥${item.savedAmount.toFixed(2)}</span>
+                        <span>进度: ${progress.toFixed(1)}%</span>
+                    </div>
+                    
+                    ${canBuy ? 
+                        '<div class="status-badge status-achieved">🎉 可以购买</div>' : 
+                        '<div class="status-badge status-saving">💪 还需 ¥' + needed.toFixed(2) + '</div>'
+                    }
+                    
+                    <div class="item-details" id="details-${index}">
+                        <div class="detail-form">
+                            <div class="form-group">
+                                <label>已攒金额 (元)</label>
+                                <input type="number" id="savedAmount-${index}" value="${item.savedAmount}" step="0.01" min="0" max="${item.price}">
+                            </div>
+                            <div class="form-group">
+                                <label>修改目标金额 (元)</label>
+                                <input type="number" id="editPrice-${index}" value="${item.price}" step="0.01" min="0">
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-success btn-sm" onclick="updateItem(${index})">保存</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteItem(${index})">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemCard);
+            });
+        }
+        
+        // 切换商品详情显示
+        function toggleItemDetails(index) {
+            const details = document.getElementById(`details-${index}`);
+            if (details) {
+                const isVisible = details.style.display === 'block';
+                details.style.display = isVisible ? 'none' : 'block';
+            }
+        }
+        
+        // 更新商品信息
+        function updateItem(index) {
+            const savedAmountInput = document.getElementById(`savedAmount-${index}`);
+            const priceInput = document.getElementById(`editPrice-${index}`);
+            
+            if (!savedAmountInput || !priceInput) {
+                return;
+            }
+            
+            const savedAmount = parseFloat(savedAmountInput.value);
+            const newPrice = parseFloat(priceInput.value);
+            
+            if (isNaN(savedAmount) || savedAmount < 0 || isNaN(newPrice) || newPrice <= 0) {
+                alert('请输入有效的金额');
+                return;
+            }
+            
+            items[index].savedAmount = Math.min(savedAmount, newPrice);
+            items[index].price = newPrice;
+            items[index].achieved = items[index].savedAmount >= newPrice;
+            
+            // 重新计算总金额
+            recalculateTotalMoney();
+            saveItems();
+            displayItems();
+        }
+        
+        // 删除商品
+        function deleteItem(index) {
+            if (confirm('确定要删除这个商品吗？')) {
+                items.splice(index, 1);
+                recalculateTotalMoney();
+                saveItems();
+                displayItems();
+            }
+        }
+        
+        // 重新计算总金额
+        function recalculateTotalMoney() {
+            currentMoney = items.reduce((total, item) => total + item.savedAmount, 0);
+            updateTotalMoney();
+        }
+        
+        // 保存商品数据
+        function saveItems() {
+            localStorage.setItem('items', JSON.stringify(items));
+        }
+        
+        // 按回车键添加商品
+        document.getElementById('itemPrice').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addItem();
+            }
+        });
+    </script>
+</body>
+</html>
